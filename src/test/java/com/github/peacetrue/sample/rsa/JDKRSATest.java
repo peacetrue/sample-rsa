@@ -1,40 +1,59 @@
 package com.github.peacetrue.sample.rsa;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.SecureRandom;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
+import java.security.*;
+import java.util.Arrays;
 
 /**
+ * jdk rsa 使用示例
+ *
  * @author : xiayx
  * @since : 2021-08-13 12:44
  **/
+@Slf4j
 class JDKRSATest {
 
     @Test
     void basic() throws Exception {
+        log.info("生成密钥对");
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
         generator.initialize(1024, new SecureRandom());
-        KeyPair keyPair = generator.generateKeyPair();
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();  // 得到公钥
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();   // 得到私钥
+        java.security.KeyPair keyPair = generator.generateKeyPair();
+        PublicKey publicKey = keyPair.getPublic();
+        PrivateKey privateKey = keyPair.getPrivate();
 
-        String message = "peacetrue";
+        log.info("加密信息");
+        String message = RandomStringUtils.random(10);
         byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        byte[] messageEncoded = cipher.doFinal(messageBytes);
+        byte[] messageEncryptedBytes = encrypt(publicKey, messageBytes);
+        Assertions.assertFalse(Arrays.equals(messageEncryptedBytes, messageBytes), "加密后消息必须发生变化");
 
-        cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        byte[] messageDecodedBytes = cipher.doFinal(messageEncoded);
-        String messageDecoded = new String(messageDecodedBytes, StandardCharsets.UTF_8);
-        Assertions.assertEquals(message, messageDecoded);
+        log.info("解密信息");
+        byte[] messageDecryptedBytes = decrypt(privateKey, messageEncryptedBytes);
+        Assertions.assertArrayEquals(messageDecryptedBytes, messageBytes, "私钥可以解密");
+//        byte[] decrypt = decrypt(publicKey, messageEncryptedBytes);
+//        Assertions.assertFalse(Arrays.equals(decrypt, messageBytes), "公钥不能解密");
+//        javax.crypto.BadPaddingException: Decryption error
+    }
+
+    private byte[] encrypt(Key key, byte[] messageBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        Cipher encryptCipher = Cipher.getInstance("RSA");
+        encryptCipher.init(Cipher.ENCRYPT_MODE, key);
+        return encryptCipher.doFinal(messageBytes);
+    }
+
+    private byte[] decrypt(Key key, byte[] messageDecryptedBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        Cipher decryptCipher = Cipher.getInstance("RSA");
+        decryptCipher.init(Cipher.DECRYPT_MODE, key);
+        return decryptCipher.doFinal(messageDecryptedBytes);
     }
 }

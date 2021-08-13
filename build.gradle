@@ -19,6 +19,12 @@ allprojects { project ->
     apply plugin: "java"
     apply plugin: "java-library"
 
+    compileJava.options.encoding = 'UTF-8'
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
     repositories {
         mavenLocal()
         maven { url "https://maven.aliyun.com/repository/public" }
