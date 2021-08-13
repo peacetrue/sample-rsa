@@ -12,9 +12,9 @@ buildscript {
 
 allprojects { project ->
 
-    group "com.github.peacetrue.template"
+    group "com.github.peacetrue.sample.rsa"
     version "1.0.0-SNAPSHOT"
-    description "gradle模板"
+    description "RSA 样章"
 
     apply plugin: "java"
     apply plugin: "java-library"
