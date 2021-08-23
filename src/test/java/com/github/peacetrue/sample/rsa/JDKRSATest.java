@@ -5,10 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Arrays;
@@ -45,13 +42,13 @@ class JDKRSATest {
 //        javax.crypto.BadPaddingException: Decryption error
     }
 
-    private byte[] encrypt(Key key, byte[] messageBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    private byte[] encrypt(Key key, byte[] messageBytes) throws Exception {
         Cipher encryptCipher = Cipher.getInstance("RSA");
         encryptCipher.init(Cipher.ENCRYPT_MODE, key);
         return encryptCipher.doFinal(messageBytes);
     }
 
-    private byte[] decrypt(Key key, byte[] messageDecryptedBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    private byte[] decrypt(Key key, byte[] messageDecryptedBytes) throws Exception {
         Cipher decryptCipher = Cipher.getInstance("RSA");
         decryptCipher.init(Cipher.DECRYPT_MODE, key);
         return decryptCipher.doFinal(messageDecryptedBytes);

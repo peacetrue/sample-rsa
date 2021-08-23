@@ -9,10 +9,10 @@ import java.security.*;
 public class JDKPublicKeyCryptography implements PublicKeyCryptography<PublicKey, PrivateKey> {
 
     @Override
-    public KeyPair<PublicKey, PrivateKey> generateKeyPair(int length) {
+    public KeyPair<PublicKey, PrivateKey> generateKeyPair(int bitLength) {
         try {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-            generator.initialize(length, new SecureRandom());
+            generator.initialize(bitLength, new SecureRandom());
             java.security.KeyPair keyPair = generator.generateKeyPair();
             return new KeyPairImpl<>(keyPair.getPublic(), keyPair.getPrivate());
         } catch (NoSuchAlgorithmException e) {
@@ -27,7 +27,7 @@ public class JDKPublicKeyCryptography implements PublicKeyCryptography<PublicKey
             encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return encryptCipher.doFinal(message);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-            throw new RuntimeException("to unchecked exception", e);
+            throw new IllegalStateException("to unchecked exception", e);
         }
     }
 

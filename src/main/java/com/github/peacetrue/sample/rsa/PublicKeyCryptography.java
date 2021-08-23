@@ -6,21 +6,21 @@ package com.github.peacetrue.sample.rsa;
  * @author : xiayx
  * @since : 2021-08-08 15:33
  **/
-public interface PublicKeyCryptography<PublicKey, PrivateKey> {
+public interface PublicKeyCryptography<P1, P2> {
 
     /**
-     * 生成密钥对。[0]：公钥、[1]：私钥
+     * 生成密钥对
      */
-    KeyPair<PublicKey, PrivateKey> generateKeyPair(int length);
+    KeyPair<P1, P2> generateKeyPair(int bitLength);
 
     /**
      * 使用公钥加密
      */
-    byte[] encrypt(byte[] message, PublicKey publicKey);
+    byte[] encrypt(byte[] message, P1 publicKey);
 
     /**
      * 使用私钥解密
      */
-    byte[] decrypt(byte[] message, PrivateKey privateKey);
+    byte[] decrypt(byte[] message, P2 privateKey);
 
 }
